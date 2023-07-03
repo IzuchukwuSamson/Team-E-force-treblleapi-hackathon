@@ -8,18 +8,33 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
-const app_controller_1 = require("./app.controller");
-const app_service_1 = require("./app.service");
 const auth_module_1 = require("./modules/auth/auth.module");
 const user_module_1 = require("./modules/user/user.module");
 const post_module_1 = require("./modules/post/post.module");
+const mongoose_1 = require("@nestjs/mongoose");
+const config_1 = require("@nestjs/config");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
     (0, common_1.Module)({
-        imports: [auth_module_1.AuthModule, user_module_1.UserModule, post_module_1.PostModule],
-        controllers: [app_controller_1.AppController],
-        providers: [app_service_1.AppService],
+        imports: [
+            mongoose_1.MongooseModule.forRootAsync({
+                useFactory: async (configSetvice) => ({
+                    uri: configSetvice.get("CONNECTION_STRING"),
+                }),
+                inject: [config_1.ConfigService]
+            }),
+            config_1.ConfigModule.forRoot({
+                isGlobal: true,
+                cache: false,
+                envFilePath: ['.env'],
+            }),
+            auth_module_1.AuthModule,
+            user_module_1.UserModule,
+            post_module_1.PostModule
+        ],
+        controllers: [],
+        providers: [],
     })
 ], AppModule);
 exports.AppModule = AppModule;
